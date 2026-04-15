@@ -27,7 +27,7 @@ const app = express();
 // 1. CORS: Allow our frontend (React) to talk to this backend
 //    Without this, browsers will block requests from localhost:5173 → localhost:5000
 // app.use(cors({ origin: process.env.CLIENT_URL || 'http://localhost:5173' }));
-app.use(cors({ origin: process.env.CLIENT_URL || 'https://nxtmock-backend.onrender.com/api' }));
+app.use(cors({ origin: process.env.CLIENT_URL || 'https://nxtmock-backend.onrender.com' }));
 
 
 // 2. Body Parser: Convert incoming JSON requests to JavaScript objects
