@@ -8,9 +8,15 @@
 
 import axios from 'axios';
 
+const defaultBaseUrl = import.meta.env.PROD
+  ? 'https://nxtmock-backend.onrender.com/api'
+  : 'http://localhost:5000/api';
+const rawBaseUrl = import.meta.env.VITE_API_URL || defaultBaseUrl;
+const normalizedBaseUrl = rawBaseUrl.replace(/\/+$/, '');
+
 const API = axios.create({
     // baseURL: import.meta.env.VITE_API_URL || 'http://localhost:5000/api',
-  baseURL: import.meta.env.VITE_API_URL || 'https://nxtmock-backend.onrender.com/api',
+  baseURL: normalizedBaseUrl,
     
 });
 

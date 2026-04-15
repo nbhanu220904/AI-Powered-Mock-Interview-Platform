@@ -20,6 +20,32 @@ import { errorHandler, notFoundHandler } from './middleware/error.middleware.js'
 // ---- Create the Express App ----
 const app = express();
 
+const normalizeOrigin = (value = '') => value.replace(/\/+$/, '');
+
+const allowedOrigins = [
+	process.env.CLIENT_URL,
+	'http://localhost:5173',
+	'https://nxtmock-ai.vercel.app',
+]
+	.filter(Boolean)
+	.map(normalizeOrigin);
+
+const corsOptions = {
+	origin(origin, callback) {
+		// Allow non-browser requests (no Origin header) such as health checks.
+		if (!origin) return callback(null, true);
+
+		const normalizedOrigin = normalizeOrigin(origin);
+		if (allowedOrigins.includes(normalizedOrigin)) {
+			return callback(null, true);
+		}
+
+		return callback(new Error(`CORS blocked for origin: ${origin}`));
+	},
+	methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
+	allowedHeaders: ['Content-Type', 'Authorization'],
+};
+
 // ============================================
 // MIDDLEWARE (runs on every request, in order)
 // ============================================
@@ -27,7 +53,8 @@ const app = express();
 // 1. CORS: Allow our frontend (React) to talk to this backend
 //    Without this, browsers will block requests from localhost:5173 → localhost:5000
 // app.use(cors({ origin: process.env.CLIENT_URL || 'http://localhost:5173' }));
-app.use(cors({ origin: process.env.CLIENT_URL || 'https://nxtmock-ai.vercel.app' }));
+app.use(cors(corsOptions));
+app.options(/.*/, cors(corsOptions));
 
 
 // 2. Body Parser: Convert incoming JSON requests to JavaScript objects
