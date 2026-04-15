@@ -11,8 +11,15 @@ const uploadResume = async (file) => {
 };
 
 const getResume = async () => {
-  const response = await API.get('/resume');
-  return response.data.data;
+  try {
+    const response = await API.get('/resume');
+    return response.data.data;
+  } catch (error) {
+    if (error.response?.status === 404) {
+      return null;
+    }
+    throw error;
+  }
 };
 
 const startInterview = async (role, resumeText, totalQuestions) => {

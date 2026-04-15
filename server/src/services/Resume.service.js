@@ -4,12 +4,16 @@ import Resume from '../models/Resume.model.js';
 // The Function `parseResumePDF = async (pdfBuffer)` converts the multer buffer to a `unit8Array` which is the format that `pdfjsLib` expects. It then loads the PDF document and iterates through each page to extract text content. The extracted text from all pages is concatenated into a single string and returned. If any error occurs during this process, it logs the error and throws a new error with a user-friendly message.
 export const parseResumePDF = async (pdfBuffer) => {
     try {
-        const uint8Array = new uint8Array(
+    if (!pdfBuffer || pdfBuffer.length === 0) {
+      throw new Error('Uploaded PDF is empty');
+    }
+
+    const uint8Array = new Uint8Array(
             pdfBuffer.buffer,
             pdfBuffer.byteOffset,
             pdfBuffer.byteLength
         );
-        const loadingTask = pdfjsLib.getDocument({ data: uint8Array });
+    const loadingTask = pdfjsLib.getDocument({ data: uint8Array, disableWorker: true });
         const pdf = await loadingTask.promise;
 
         let extractedText = '';

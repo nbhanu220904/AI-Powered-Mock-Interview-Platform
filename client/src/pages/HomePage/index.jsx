@@ -1,7 +1,7 @@
 import { useState, useEffect, useContext } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { AuthContext } from '../../context/AuthContext.jsx';
-// import { getHistory, deleteHistoryItem } from '../../services/historyService.js';
+import { getHistory, deleteHistoryItem } from '../../services/historyService.js';
 import InterviewCard from '../../components/InterviewCard';
 import {
   BsChatSquareTextFill,
