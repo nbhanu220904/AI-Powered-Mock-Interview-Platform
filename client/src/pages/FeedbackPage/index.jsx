@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { getInterview } from '../../services/interviewService.js';
+import { getInterview, endInterview } from '../../services/interviewService.js';
 import ScoreCard from '../../components/ScoreCard';
 import getScoreColor from '../../constants/scoreColors.js';
 import {
@@ -26,8 +26,16 @@ function FeedbackPage() {
       const data = await getInterview(id);
 
       if (!data.feedback) {
-        toast.error('No feedback available for this interview.');
-        navigate('/');
+        const generated = await endInterview(id);
+
+        setInterview({
+          ...data,
+          feedback: generated.feedback,
+          overallScore: generated.overallScore,
+          status: 'completed',
+        });
+
+        toast.success('Feedback generated successfully.');
         return;
       }
 

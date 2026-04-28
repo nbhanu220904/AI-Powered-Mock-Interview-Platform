@@ -33,7 +33,7 @@ const interviewSchema = new mongoose.Schema(
         type: Array,
         default: []
     },
-    message: {
+    messages: {
         type: Array,
         default: []
     },

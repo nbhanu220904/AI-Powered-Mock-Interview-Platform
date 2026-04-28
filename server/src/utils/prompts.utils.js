@@ -5,12 +5,15 @@
 
 export const parseGeminiJSON = (text) => {
     try {
-        let cleanedText = text.trim();
+        const source = typeof text === 'string' ? text : JSON.stringify(text ?? '');
+        let cleanedText = source.trim();
+
         if (cleanedText.startsWith('```')) {
-            cleanText = cleanText.replace(/^```(?:json)?\s*\n?/, '');
-            cleanText = cleanText.replace(/\n?```\s*$/, '');
+            cleanedText = cleanedText.replace(/^```(?:json)?\s*\n?/, '');
+            cleanedText = cleanedText.replace(/\n?```\s*$/, '');
         }
-        return JSON.parse(cleanText.trim());
+
+        return JSON.parse(cleanedText.trim());
     }
     catch (error) {
         console.error('Failed to parse Gemini JSON response:', error.message);

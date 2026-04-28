@@ -37,8 +37,15 @@ function AudioPlayer({ audioBase64, autoPlay, onEnded }) {
 
     if (autoPlay) {
       audio.play().catch((err) => {
-        console.error('Audio autoplay failed:', err.message);
-        if (onEnded) onEnded();
+        const message = err?.message || '';
+        const interrupted =
+          err?.name === 'AbortError' ||
+          message.includes('interrupted by a call to pause');
+
+        if (!interrupted) {
+          console.error('Audio autoplay failed:', message);
+          if (onEnded) onEnded();
+        }
       });
     }
 

@@ -8,11 +8,18 @@ const Model_Name = 'gemini-2.5-flash';
 
 const generateContent = async (prompt) => {
     try {
+        const normalizedPrompt = typeof prompt === 'string' ? prompt.trim() : '';
+        if (!normalizedPrompt) {
+            throw new Error('Prompt is empty. Cannot generate content.');
+        }
+
         const response = await ai.models.generateContent({
             model: Model_Name,
-            content: prompt
+            contents: normalizedPrompt
         });
-        return response.text;
+
+        const text = typeof response.text === 'function' ? response.text() : response.text;
+        return text;
     }
     catch (error) {
         console.error('Error generating content:', error);
