@@ -254,11 +254,18 @@ jobs:
         with:
           fetch-depth: 0
 
+      - name: SonarQube scan skipped
+        if: ${{ vars.SONAR_ENABLE_CI_SCAN != 'true' }}
+        run: |
+          echo "Skipping CI SonarQube scan because SONAR_ENABLE_CI_SCAN is not true."
+          echo "Use SonarCloud Automatic Analysis, or set SONAR_ENABLE_CI_SCAN=true after disabling Automatic Analysis."
+
       # --------------------------------------------------------
       # SonarQube
       # --------------------------------------------------------
 
       - name: Validate SonarQube configuration
+        if: ${{ vars.SONAR_ENABLE_CI_SCAN == 'true' }}
         shell: bash
         env:
           SONAR_HOST_URL: https://sonarcloud.io
@@ -275,6 +282,7 @@ jobs:
           }
 
       - name: SonarQube Scan
+        if: ${{ vars.SONAR_ENABLE_CI_SCAN == 'true' }}
         uses: SonarSource/sonarqube-scan-action@7006c4492b2e0ee0f816d36501671557c97f5995 # v8.1.0
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
@@ -296,6 +304,7 @@ jobs:
       #
 
       - name: SonarQube Quality Gate
+        if: ${{ vars.SONAR_ENABLE_CI_SCAN == 'true' }}
         uses: SonarSource/sonarqube-quality-gate-action@v1
         timeout-minutes: 10
         env:

@@ -19,7 +19,7 @@ Do not enable the DEV workflow as a successful deployment until that interface i
 
 ## SonarQube
 
-The root `sonar-project.properties` analyzes `client` and `server`. Configure `SONAR_TOKEN` as a GitHub secret and `SONAR_HOST_URL` as a repository variable when using self-hosted SonarQube. For SonarCloud, configure the organization/project in SonarCloud and disable Automatic Analysis when this CI workflow is enabled; CI analysis and Automatic Analysis cannot run together.
+The root `sonar-project.properties` analyzes `client` and `server`. Configure `SONAR_TOKEN` as a GitHub secret and `SONAR_HOST_URL` as a repository variable when using self-hosted SonarQube. For SonarCloud, configure the organization/project in SonarCloud and disable Automatic Analysis when CI analysis is enabled; CI analysis and Automatic Analysis cannot run together. Set repository variable `SONAR_ENABLE_CI_SCAN=true` only when Automatic Analysis is disabled and you want GitHub Actions to run SonarQube scan and quality gate steps.
 
 ## Branch protection
 
