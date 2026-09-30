@@ -1,0 +1,82 @@
+name: Accel Deployment Handoff
+
+on:
+  push:
+    branches:
+      - dev
+
+permissions:
+  contents: read
+
+concurrency:
+  group: accel-dev-${{ github.sha }}
+  cancel-in-progress: false
+
+jobs:
+  prepare-release:
+    name: Prepare immutable release metadata
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout merged commit
+        uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4.3.1
+        with:
+          ref: ${{ github.sha }}
+          fetch-depth: 1
+
+      - name: Create release metadata
+        shell: bash
+        env:
+          COMMIT_SHA: ${{ github.sha }}
+          BRANCH: ${{ github.ref_name }}
+          TRIGGERED_BY: ${{ github.actor }}
+        run: |
+          RELEASE_ID="REL-${COMMIT_SHA}"
+          ARTIFACT_VERSION="mock-interview-${COMMIT_SHA}"
+          cat > release-metadata.json <<EOF
+          {
+            "commitSha": "${COMMIT_SHA}",
+            "branch": "${BRANCH}",
+            "releaseId": "${RELEASE_ID}",
+            "artifactVersion": "${ARTIFACT_VERSION}",
+            "environment": "DEV",
+            "triggeredBy": "${TRIGGERED_BY}"
+          }
+          EOF
+
+      - name: Publish release metadata
+        uses: actions/upload-artifact@v4
+        with:
+          name: release-${{ github.sha }}
+          path: release-metadata.json
+          if-no-files-found: error
+
+  accel-dev:
+    name: Accel DEV deployment handoff
+    needs: prepare-release
+    runs-on: ubuntu-latest
+    environment: DEV
+    steps:
+      - name: Checkout merged commit
+        uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4.3.1
+        with:
+          ref: ${{ github.sha }}
+          fetch-depth: 1
+
+      - name: Download release metadata
+        uses: actions/download-artifact@v4
+        with:
+          name: release-${{ github.sha }}
+
+      - name: Validate Accel deployment contract
+        env:
+          ACCEL_API_URL: ${{ vars.ACCEL_API_URL }}
+          ACCEL_PROJECT: ${{ vars.ACCEL_PROJECT }}
+          ACCEL_PIPELINE: ${{ vars.ACCEL_PIPELINE }}
+          ACCEL_TOKEN: ${{ secrets.ACCEL_TOKEN }}
+          COMMIT_SHA: ${{ github.sha }}
+          BRANCH: ${{ github.ref_name }}
+          RELEASE_ID: REL-${{ github.sha }}
+          ARTIFACT_VERSION: mock-interview-${{ github.sha }}
+          ENVIRONMENT: DEV
+          TRIGGERED_BY: ${{ github.actor }}
+        run: node scripts/accel/trigger.js
