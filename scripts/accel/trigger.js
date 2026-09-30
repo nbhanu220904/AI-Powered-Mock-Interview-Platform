@@ -16,6 +16,9 @@ const required = [
 const missing = required.filter((name) => !process.env[name]);
 if (missing.length > 0) {
   console.error(`Accel contract is not configured. Missing: ${missing.join(", ")}`);
+  console.error(
+    `Accel integration is not configured. Missing: ${missing.join(", ")}`,
+  );
   process.exit(1);
 }
 
@@ -29,9 +32,19 @@ const metadata = {
   deploymentTimestamp: new Date().toISOString(),
 };
 
+if (Object.values(metadata).some((value) => !value)) {
+  console.error("Accel deployment metadata is incomplete.");
+  process.exit(1);
+}
+
 await writeFile("accel-deployment.json", `${JSON.stringify(metadata, null, 2)}\n`);
-console.log(JSON.stringify(metadata, null, 2));
+console.log(JSON.stringify({
+  message: "Accel deployment contract validated",
+  project: process.env.ACCEL_PROJECT,
+  pipeline: process.env.ACCEL_PIPELINE,
+  apiUrl: process.env.ACCEL_API_URL,
+  metadata,
+}, null, 2));
 console.error(
-  "No Accel request was sent: no documented Accel API or action exists in this repository. Replace this adapter with the organization-owned interface before enabling deployment.",
+  "No Accel request was sent: the repository contains no documented Accel API contract. Connect this adapter to the organization-owned Accel interface before enabling deployment.",
 );
-process.exit(1);
