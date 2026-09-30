@@ -21,6 +21,40 @@ const interviewSchema = new mongoose.Schema(
         enum: ['in_progress', 'completed'],
         default: 'in_progress'
     },
+    modality: {
+        type: String,
+        enum: ['audio', 'video'],
+        default: 'audio'
+    },
+    sessionStatus: {
+        type: String,
+        enum: ['created', 'active', 'paused', 'completed', 'abandoned'],
+        default: 'created'
+    },
+    mediaConsent: {
+        type: Boolean,
+        default: false
+    },
+    startedAt: {
+        type: Date,
+        default: null
+    },
+    endedAt: {
+        type: Date,
+        default: null
+    },
+    lastActivityAt: {
+        type: Date,
+        default: null
+    },
+    videoTranscript: {
+        type: [mongoose.Schema.Types.Mixed],
+        default: []
+    },
+    videoMetrics: {
+        type: mongoose.Schema.Types.Mixed,
+        default: {}
+    },
     totalQuestions: {
         type: Number,
         default: 5

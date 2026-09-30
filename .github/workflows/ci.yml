@@ -9,6 +9,105 @@ permissions:
   contents: read
 
 concurrency:
+  group: accel-release-${{ github.sha }}
+  cancel-in-progress: false
+
+jobs:
+  prepare-release:
+    name: Build immutable release candidate
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout exact merged commit
+        uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4.3.1
+        with:
+          ref: ${{ github.sha }}
+          fetch-depth: 1
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v7
+        with:
+          node-version: 20
+          cache: npm
+          cache-dependency-path: |
+            client/package-lock.json
+            server/package-lock.json
+
+      - name: Build client
+        working-directory: client
+        run: npm ci && npm run build
+
+      - name: Validate server
+        working-directory: server
+        run: npm ci && node --check server.js
+
+      - name: Create release metadata
+        shell: bash
+        env:
+          COMMIT_SHA: ${{ github.sha }}
+          BRANCH: ${{ github.ref_name }}
+          TRIGGERED_BY: ${{ github.actor }}
+        run: |
+          RELEASE_ID="REL-${COMMIT_SHA}"
+          ARTIFACT_VERSION="mock-interview-${COMMIT_SHA}"
+          cat > release-metadata.json <<EOF
+          {
+            "commitSha": "${COMMIT_SHA}",
+            "branch": "${BRANCH}",
+            "releaseId": "${RELEASE_ID}",
+            "artifactVersion": "${ARTIFACT_VERSION}",
+            "environment": "DEV",
+            "triggeredBy": "${TRIGGERED_BY}"
+          }
+          EOF
+
+      - name: Publish immutable release candidate
+        uses: actions/upload-artifact@v4
+        with:
+          name: mock-interview-${{ github.sha }}
+          if-no-files-found: error
+          path: |
+            client/dist
+            server/src
+            server/server.js
+            server/package.json
+            server/package-lock.json
+            release-metadata.json
+
+  accel-dev:
+    name: Accel DEV deployment handoff
+    needs: prepare-release
+    runs-on: ubuntu-latest
+    environment: DEV
+    steps:
+      - name: Checkout exact merged commit
+        uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4.3.1
+        with:
+          ref: ${{ github.sha }}
+          fetch-depth: 1
+
+      - name: Validate Accel deployment contract
+        env:
+          ACCEL_API_URL: ${{ vars.ACCEL_API_URL }}
+          ACCEL_PROJECT: ${{ vars.ACCEL_PROJECT }}
+          ACCEL_PIPELINE: ${{ vars.ACCEL_PIPELINE }}
+          ACCEL_TOKEN: ${{ secrets.ACCEL_TOKEN }}
+          COMMIT_SHA: ${{ github.sha }}
+          BRANCH: ${{ github.ref_name }}
+          RELEASE_ID: REL-${{ github.sha }}
+          ARTIFACT_VERSION: mock-interview-${{ github.sha }}
+          ENVIRONMENT: DEV
+          TRIGGERED_BY: ${{ github.actor }}
+        run: node scripts/accel/trigger.jsname: Accel Deployment Handoff
+
+on:
+  push:
+    branches:
+      - dev
+
+permissions:
+  contents: read
+
+concurrency:
   group: accel-dev-${{ github.sha }}
   cancel-in-progress: false
 

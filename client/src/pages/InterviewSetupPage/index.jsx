@@ -112,7 +112,7 @@ function InterviewSetupPage() {
 };
 
     // TODO: Implement handleStartInterview - validate inputs, call startInterview, navigate
-    const handleStartInterview = async () => {
+    const handleStartInterview = async (mode = 'audio') => {
   if (!selectedRole) {
     toast.error('Please select a role.');
     return;
@@ -135,9 +135,13 @@ function InterviewSetupPage() {
       totalQuestions
     );
     toast.success('Interview started!');
-    navigate(`/interview/${data.interviewId}`, {
-      state: { audio: data.audio },
-    });
+    if (mode === 'video') {
+      navigate(`/video-interview/${data.interviewId}`);
+    } else {
+      navigate(`/interview/${data.interviewId}`, {
+        state: { audio: data.audio },
+      });
+    }
   } catch (error) {
     const message =
       error.response?.data?.message || 'Failed to start interview';
@@ -315,13 +319,22 @@ function InterviewSetupPage() {
               Next
             </button>
           ) : (
-            <button
-              className={`setup-start-btn ${loading || !selectedRole || !resumeText ? 'setup-start-btn-disabled' : ''}`}
-              onClick={handleStartInterview}
-              disabled={loading || !selectedRole || !resumeText}
-            >
-              Start Interview
-            </button>
+            <div className="setup-start-actions">
+              <button
+                className={`setup-start-btn ${loading || !selectedRole || !resumeText ? 'setup-start-btn-disabled' : ''}`}
+                onClick={() => handleStartInterview('audio')}
+                disabled={loading || !selectedRole || !resumeText}
+              >
+                Start Voice Interview
+              </button>
+              <button
+                className={`setup-video-start-btn ${loading || !selectedRole || !resumeText ? 'setup-start-btn-disabled' : ''}`}
+                onClick={() => handleStartInterview('video')}
+                disabled={loading || !selectedRole || !resumeText}
+              >
+                Start Video Interview
+              </button>
+            </div>
           )}
         </div>
       </div>

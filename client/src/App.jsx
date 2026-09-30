@@ -15,6 +15,7 @@ import InterviewSetupPage from './pages/InterviewSetupPage';
 import InterviewPage from './pages/InterviewPage';
 import FeedbackPage from './pages/FeedbackPage';
 import HistoryPage from './pages/HistoryPage';
+import VideoInterviewPage from './pages/VideoInterviewPage';
 
 function App() {
   return (
@@ -54,12 +55,12 @@ function App() {
             </ProtectedRoute>
           }
               />
-              <Route
-          path="/interview/:id"
+        <Route
+          path="/video-interview/:sessionId"
           element={
             <ProtectedRoute>
               <Navbar />
-              <InterviewPage />
+              <VideoInterviewPage />
             </ProtectedRoute>
           }
         />

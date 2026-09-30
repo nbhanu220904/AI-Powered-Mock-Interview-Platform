@@ -9,15 +9,19 @@
 
 // Load environment variables FIRST (before anything else uses them)
 import "dotenv/config";
+import { createServer } from "node:http";
 
 // Import our configured Express app
 import app from "./src/app.js";
 
 // Import the database connection function
 import connectDB from "./src/config/db.config.js";
+import { createInterviewRealtime } from "./src/realtime/interviewRealtime.js";
 
 // Get the port from .env or use 5000 as default
 const PORT = process.env.PORT || 5000;
+const httpServer = createServer(app);
+createInterviewRealtime(httpServer);
 
 // ---- Start the Server ----
 
@@ -27,7 +31,7 @@ const startServer = async () => {
     await connectDB();
 
     // Step 2: Start listening for HTTP requests
-    app.listen(PORT, () => {
+    httpServer.listen(PORT, () => {
       console.error(`\n Server is running on port ${PORT}`);
       console.error(` Environment: ${process.env.NODE_ENV || "development"}`);
       console.error(` URL: http://localhost:${PORT}\n`);
