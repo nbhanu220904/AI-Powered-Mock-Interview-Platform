@@ -51,8 +51,11 @@ function HomePage() {
   }
 };
 
-    // TODO: Implement handleCardClick - navigate based on interview status
     const handleCardClick = (interview) => {
+  if (interview.modality === 'video' && interview.status !== 'completed') {
+    navigate(`/video-interview/${interview._id}`);
+    return;
+  }
   if (interview.status === 'completed') {
     navigate(`/feedback/${interview._id}`);
   } else {
