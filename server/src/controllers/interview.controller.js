@@ -153,3 +153,78 @@ export const speakText = async (req, res, next) => {
     next(error);
   }
 };
+
+export const startVideoSession = async (req, res, next) => {
+  try {
+    if (req.body.consent !== true) {
+      return res.status(400).json({
+        success: false,
+        message: 'Camera and microphone consent is required.',
+      });
+    }
+
+    const session = await interviewService.startVideoSession(
+      req.params.id,
+      req.user._id,
+    );
+    return res.json({ success: true, data: session });
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const getVideoSession = async (req, res, next) => {
+  try {
+    const session = await interviewService.getVideoSession(
+      req.params.id,
+      req.user._id,
+    );
+    return res.json({ success: true, data: session });
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const updateVideoSession = async (req, res, next) => {
+  try {
+    const session = await interviewService.updateVideoSession(
+      req.params.id,
+      req.user._id,
+      req.body,
+    );
+    return res.json({ success: true, data: session });
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const addVideoTranscript = async (req, res, next) => {
+  try {
+    const { speaker, text, isFinal = false, timestamp } = req.body;
+    if (!['candidate', 'interviewer'].includes(speaker) || !text?.trim()) {
+      return res.status(400).json({ success: false, message: 'A speaker and transcript text are required.' });
+    }
+
+    const transcript = await interviewService.addVideoTranscript(
+      req.params.id,
+      req.user._id,
+      { speaker, text: text.trim(), isFinal, timestamp },
+    );
+    return res.status(201).json({ success: true, data: transcript });
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const endVideoSession = async (req, res, next) => {
+  try {
+    const session = await interviewService.endVideoSession(
+      req.params.id,
+      req.user._id,
+      req.body.metrics,
+    );
+    return res.json({ success: true, data: session });
+  } catch (error) {
+    next(error);
+  }
+};

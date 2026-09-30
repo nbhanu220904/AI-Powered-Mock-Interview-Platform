@@ -1,0 +1,53 @@
+.video-interview-page { min-height: calc(100vh - 72px); padding: 28px; background: #0b1220; color: #e2e8f0; }
+.video-interview-header { max-width: 1440px; margin: 0 auto 20px; display: flex; align-items: center; justify-content: space-between; gap: 16px; }
+.video-interview-header h1 { margin: 2px 0 0; color: #f8fafc; font-size: 24px; }
+.video-interview-eyebrow { color: #93c5fd; font-size: 12px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; }
+.video-interview-connection { display: flex; align-items: center; gap: 8px; color: #86efac; font-size: 13px; }
+.video-interview-workspace { max-width: 1440px; margin: 0 auto; display: grid; grid-template-columns: minmax(0, 1fr) 360px; gap: 20px; }
+.video-interview-stage { min-width: 0; }
+.video-interview-video-shell { position: relative; min-height: 560px; overflow: hidden; border: 1px solid #263858; border-radius: 14px; background: #111c31; }
+.video-interview-video-shell video { width: 100%; height: 100%; min-height: 560px; display: block; object-fit: cover; transform: scaleX(-1); background: #111827; }
+.video-interview-ai-card { position: absolute; right: 20px; bottom: 20px; display: flex; align-items: center; gap: 10px; padding: 10px 14px; border: 1px solid #475569; border-radius: 10px; background: rgba(15, 23, 42, .9); }
+.video-interview-ai-card strong, .video-interview-ai-card span { display: block; }
+.video-interview-ai-card span { color: #94a3b8; font-size: 12px; text-transform: capitalize; }
+.video-interview-ai-avatar { width: 38px; height: 38px; display: grid; place-items: center; border-radius: 50%; background: #312e81; color: #a5b4fc; }
+.video-interview-ai-avatar.is-speaking { color: #67e8f9; }
+.video-interview-live-badge { position: absolute; top: 18px; left: 18px; display: flex; align-items: center; gap: 6px; padding: 6px 9px; border-radius: 6px; background: rgba(127, 29, 29, .85); color: #fecaca; font-size: 12px; font-weight: 700; }
+.video-interview-live-badge svg { font-size: 7px; }
+.video-interview-controls { display: flex; justify-content: center; flex-wrap: wrap; gap: 10px; padding: 16px 0 0; }
+.video-control-button { min-width: 78px; display: flex; flex-direction: column; align-items: center; gap: 5px; padding: 10px 12px; border: 1px solid #334155; border-radius: 9px; background: #17233a; color: #cbd5e1; }
+.video-control-button:hover, .video-control-button:focus-visible { border-color: #60a5fa; color: #fff; }
+.video-control-button span { font-size: 11px; }
+.video-control-end { background: #991b1b; border-color: #b91c1c; color: #fee2e2; }
+.video-interview-sidebar { display: flex; flex-direction: column; gap: 14px; min-width: 0; }
+.video-interview-session-status, .video-interview-panel, .video-interview-consent { border: 1px solid #263858; border-radius: 12px; background: #111c31; }
+.video-interview-session-status { display: flex; align-items: center; gap: 10px; padding: 16px; }
+.video-interview-session-status strong, .video-interview-session-status span { display: block; }
+.video-interview-session-status span:last-child { margin-top: 3px; color: #94a3b8; font-size: 12px; text-transform: capitalize; }
+.video-interview-status-dot { width: 9px; height: 9px; border-radius: 50%; background: #4ade80; box-shadow: 0 0 0 4px rgba(74, 222, 128, .12); }
+.video-interview-panel, .video-interview-consent { padding: 16px; }
+.video-interview-panel-heading { display: flex; align-items: center; justify-content: space-between; color: #93c5fd; }
+.video-interview-panel-heading h2 { margin: 0; color: #f8fafc; font-size: 15px; }
+.video-interview-transcript { max-height: 220px; overflow-y: auto; margin: 12px 0; }
+.video-interview-transcript-entry { margin: 0 0 12px; font-size: 13px; }
+.video-interview-transcript-entry strong { display: block; color: #93c5fd; font-size: 11px; text-transform: uppercase; }
+.video-interview-transcript-entry span { display: block; color: #cbd5e1; }
+.video-interview-empty, .video-interview-consent p { color: #94a3b8; font-size: 13px; }
+.video-interview-panel textarea { width: 100%; min-height: 76px; resize: vertical; padding: 10px; border: 1px solid #334155; border-radius: 8px; background: #0b1220; color: #e2e8f0; }
+.video-interview-primary, .video-interview-secondary, .video-interview-danger { display: inline-flex; align-items: center; justify-content: center; gap: 7px; border-radius: 8px; padding: 10px 14px; font-weight: 700; }
+.video-interview-primary { width: 100%; background: #2563eb; color: white; }
+.video-interview-secondary { background: #1e293b; color: #e2e8f0; }
+.video-interview-danger { background: #dc2626; color: white; }
+.video-interview-primary:disabled, .video-interview-secondary:disabled, .video-interview-danger:disabled { cursor: not-allowed; opacity: .5; }
+.video-interview-metrics-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 14px; }
+.video-interview-metrics-grid span { padding: 10px; border-radius: 8px; background: #17233a; color: #94a3b8; font-size: 11px; }
+.video-interview-metrics-grid strong { display: block; margin-top: 3px; color: #f8fafc; font-size: 18px; }
+.video-interview-error { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-top: 12px; padding: 12px 14px; border: 1px solid #7f1d1d; border-radius: 8px; background: #450a0a; color: #fecaca; font-size: 13px; }
+.video-interview-error button { display: inline-flex; align-items: center; gap: 6px; padding: 7px 10px; border-radius: 6px; background: #991b1b; color: #fff; }
+.video-interview-modal-backdrop { position: fixed; inset: 0; z-index: 10; display: grid; place-items: center; padding: 20px; background: rgba(2, 6, 23, .76); }
+.video-interview-modal { width: min(420px, 100%); padding: 24px; border: 1px solid #334155; border-radius: 12px; background: #111c31; }
+.video-interview-modal h2 { margin: 0 0 8px; color: #f8fafc; }
+.video-interview-modal p { color: #94a3b8; font-size: 14px; }
+.video-interview-modal > div { display: flex; justify-content: flex-end; gap: 10px; margin-top: 20px; }
+@media (max-width: 900px) { .video-interview-page { padding: 18px; } .video-interview-workspace { grid-template-columns: 1fr; } .video-interview-video-shell, .video-interview-video-shell video { min-height: 420px; } }
+@media (max-width: 540px) { .video-interview-header { align-items: flex-start; flex-direction: column; } .video-interview-header h1 { font-size: 20px; } .video-interview-video-shell, .video-interview-video-shell video { min-height: 300px; } .video-control-button { min-width: 64px; padding: 9px 7px; } }

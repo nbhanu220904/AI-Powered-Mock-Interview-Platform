@@ -437,3 +437,83 @@ export const getInterviewById = async (interviewId, userId) => {
   }
   return interview;
 };
+
+const getOwnedVideoInterview = async (interviewId, userId) => {
+  const interview = await Interview.findOne({ _id: interviewId, userId });
+  if (!interview) {
+    const error = new Error('Interview not found');
+    error.statusCode = 404;
+    throw error;
+  }
+  return interview;
+};
+
+const videoSessionResponse = (interview) => ({
+  sessionId: interview._id,
+  role: interview.role,
+  status: interview.sessionStatus,
+  mediaConsent: interview.mediaConsent,
+  startedAt: interview.startedAt,
+  endedAt: interview.endedAt,
+  lastActivityAt: interview.lastActivityAt,
+  transcript: interview.videoTranscript || [],
+  metrics: interview.videoMetrics || {},
+  currentQuestion: interview.currentQuestion,
+  totalQuestions: interview.totalQuestions,
+});
+
+export const startVideoSession = async (interviewId, userId) => {
+  const interview = await getOwnedVideoInterview(interviewId, userId);
+  const now = new Date();
+  interview.modality = 'video';
+  interview.mediaConsent = true;
+  interview.sessionStatus = 'active';
+  interview.startedAt = interview.startedAt || now;
+  interview.lastActivityAt = now;
+  await interview.save();
+  return videoSessionResponse(interview);
+};
+
+export const getVideoSession = async (interviewId, userId) => {
+  const interview = await getOwnedVideoInterview(interviewId, userId);
+  return videoSessionResponse(interview);
+};
+
+export const updateVideoSession = async (interviewId, userId, updates = {}) => {
+  const interview = await getOwnedVideoInterview(interviewId, userId);
+  const allowedStatuses = ['active', 'paused', 'abandoned'];
+  if (updates.status && allowedStatuses.includes(updates.status)) {
+    interview.sessionStatus = updates.status;
+  }
+  if (updates.metrics && typeof updates.metrics === 'object') {
+    interview.videoMetrics = { ...interview.videoMetrics, ...updates.metrics };
+  }
+  interview.lastActivityAt = new Date();
+  await interview.save();
+  return videoSessionResponse(interview);
+};
+
+export const addVideoTranscript = async (interviewId, userId, entry) => {
+  const interview = await getOwnedVideoInterview(interviewId, userId);
+  const transcript = {
+    speaker: entry.speaker,
+    text: entry.text,
+    isFinal: Boolean(entry.isFinal),
+    timestamp: entry.timestamp || new Date(),
+  };
+  interview.videoTranscript.push(transcript);
+  interview.lastActivityAt = new Date();
+  await interview.save();
+  return transcript;
+};
+
+export const endVideoSession = async (interviewId, userId, metrics = {}) => {
+  const interview = await getOwnedVideoInterview(interviewId, userId);
+  const now = new Date();
+  interview.sessionStatus = 'completed';
+  interview.endedAt = now;
+  interview.lastActivityAt = now;
+  interview.videoMetrics = { ...interview.videoMetrics, ...metrics };
+  await interview.save();
+  return videoSessionResponse(interview);
+};

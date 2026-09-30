@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import toast from 'react-hot-toast';
 import { BsMicFill, BsRecordCircleFill, BsCheckCircleFill } from 'react-icons/bs';
 import './index.css';
@@ -11,8 +11,9 @@ function VoiceRecorder({ onRecordingComplete, disabled }) {
   const [mediaRecorder, setMediaRecorder] = useState(null);
   const [recordedBlob, setRecordedBlob] = useState(null);
   const [audioPreviewUrl, setAudioPreviewUrl] = useState(null);
+  const mediaRecorderRef = useRef(null);
+  const streamRef = useRef(null);
 
-    // TODO: Add useEffect for recording timer (increment every second, stop at MAX_RECORD_TIME)
     useEffect(() => {
   let timerId = null;
 
@@ -20,7 +21,8 @@ function VoiceRecorder({ onRecordingComplete, disabled }) {
     timerId = setInterval(() => {
       setRecordingTime((prev) => {
         if (prev + 1 >= MAX_RECORD_TIME) {
-          stopRecording();
+          mediaRecorderRef.current?.stop();
+          setIsRecording(false);
           toast.success('Maximum recording time reached (5 minutes).');
           return MAX_RECORD_TIME;
         }
@@ -36,22 +38,20 @@ function VoiceRecorder({ onRecordingComplete, disabled }) {
   };
 }, [isRecording]);
 
-    // TODO: Add useEffect for cleanup on unmount (stop recorder, revoke URLs)
     useEffect(() => {
   return () => {
-    if (mediaRecorder && mediaRecorder.state !== 'inactive') {
-      mediaRecorder.stop();
-      if (mediaRecorder.stream) {
-        mediaRecorder.stream.getTracks().forEach((track) => track.stop());
-      }
+    if (mediaRecorderRef.current && mediaRecorderRef.current.state !== 'inactive') {
+      mediaRecorderRef.current.stop();
+    }
+    if (streamRef.current) {
+      streamRef.current.getTracks().forEach((track) => track.stop());
     }
     if (audioPreviewUrl) {
       URL.revokeObjectURL(audioPreviewUrl);
     }
   };
-}, [mediaRecorder, audioPreviewUrl]);
+}, [audioPreviewUrl]);
 
-    // TODO: Implement startRecording - request microphone, create MediaRecorder, collect chunks
     const startRecording = async () => {
   try {
     if (audioPreviewUrl) {
@@ -61,6 +61,7 @@ function VoiceRecorder({ onRecordingComplete, disabled }) {
     setAudioPreviewUrl(null);
 
     const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+    streamRef.current = stream;
 
     const options = { mimeType: 'audio/webm;codecs=opus' };
     if (!MediaRecorder.isTypeSupported(options.mimeType)) {
@@ -84,9 +85,20 @@ function VoiceRecorder({ onRecordingComplete, disabled }) {
       setAudioPreviewUrl(previewUrl);
 
       stream.getTracks().forEach((track) => track.stop());
+      streamRef.current = null;
+      mediaRecorderRef.current = null;
+    };
+
+    recorder.onerror = () => {
+      stream.getTracks().forEach((track) => track.stop());
+      mediaRecorderRef.current = null;
+      streamRef.current = null;
+      setIsRecording(false);
+      toast.error('Recording failed. Please try again.');
     };
 
     recorder.start();
+    mediaRecorderRef.current = recorder;
     setMediaRecorder(recorder);
     setIsRecording(true);
     setRecordingTime(0);
@@ -98,15 +110,13 @@ function VoiceRecorder({ onRecordingComplete, disabled }) {
   }
 };
 
-    // TODO: Implement stopRecording - stop the MediaRecorder
     const stopRecording = () => {
-  if (mediaRecorder && mediaRecorder.state !== 'inactive') {
-    mediaRecorder.stop();
+  if (mediaRecorderRef.current && mediaRecorderRef.current.state !== 'inactive') {
+    mediaRecorderRef.current.stop();
   }
   setIsRecording(false);
 };
 
-    // TODO: Implement handleSubmit - call onRecordingComplete with recorded blob
     const handleSubmit = () => {
   if (recordedBlob) {
     onRecordingComplete(recordedBlob);
@@ -119,7 +129,6 @@ function VoiceRecorder({ onRecordingComplete, disabled }) {
   }
 };
 
-    // TODO: Implement handleReRecord - clear recorded blob and preview URL'
     const handleReRecord = () => {
   if (audioPreviewUrl) {
     URL.revokeObjectURL(audioPreviewUrl);

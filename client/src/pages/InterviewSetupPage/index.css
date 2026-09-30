@@ -224,6 +224,25 @@
   margin-top: 24px;
 }
 
+.setup-start-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  justify-content: flex-end;
+}
+
+.setup-video-start-btn {
+  background-color: #312e81;
+  color: #ffffff;
+  font-family: "Roboto", sans-serif;
+  font-size: 14px;
+  font-weight: 700;
+  padding: 12px 24px;
+  border-radius: 8px;
+  border: none;
+  cursor: pointer;
+}
+
 .setup-back-btn {
   padding: 12px 28px;
   background-color: #ffffff;

@@ -57,6 +57,33 @@ const getInterview = async (interviewId) => {
   return response.data.data;
 };
 
+const startVideoSession = async (interviewId) => {
+  const response = await API.post(`/interview/${interviewId}/video/session`, {
+    consent: true,
+  });
+  return response.data.data;
+};
+
+const getVideoSession = async (interviewId) => {
+  const response = await API.get(`/interview/${interviewId}/video/session`);
+  return response.data.data;
+};
+
+const updateVideoSession = async (interviewId, updates) => {
+  const response = await API.patch(`/interview/${interviewId}/video/session`, updates);
+  return response.data.data;
+};
+
+const addVideoTranscript = async (interviewId, transcript) => {
+  const response = await API.post(`/interview/${interviewId}/video/transcript`, transcript);
+  return response.data.data;
+};
+
+const endVideoSession = async (interviewId, metrics) => {
+  const response = await API.post(`/interview/${interviewId}/video/end`, { metrics });
+  return response.data.data;
+};
+
 export {
   uploadResume,
   getResume,
@@ -66,4 +93,9 @@ export {
   submitCode,
   endInterview,
   getInterview,
+  startVideoSession,
+  getVideoSession,
+  updateVideoSession,
+  addVideoTranscript,
+  endVideoSession,
 };

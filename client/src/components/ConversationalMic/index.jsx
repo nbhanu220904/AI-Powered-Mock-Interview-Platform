@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { BsMicFill } from 'react-icons/bs';
 import './index.css';
 
@@ -12,8 +12,10 @@ function ConversationalMic({ onTranscriptReady, onAutoSubmit, disabled }) {
   const [autoSubmitCountdown, setAutoSubmitCountdown] = useState(null);
   const [recognition, setRecognition] = useState(null);
   const [silenceTimer, setSilenceTimer] = useState(null);
+  const silenceTimerRef = useRef(null);
+  const countdownTimersRef = useRef([]);
+  const recognitionRef = useRef(null);
 
-    // TODO: Add useEffect to initialize SpeechRecognition with onresult, onerror, onend handlers
     useEffect(() => {
   const SpeechRecognition =
     window.SpeechRecognition || window.webkitSpeechRecognition;
@@ -65,6 +67,7 @@ function ConversationalMic({ onTranscriptReady, onAutoSubmit, disabled }) {
   };
 
   setRecognition(recog);
+  recognitionRef.current = recog;
 
   return () => {
     recog.abort();
@@ -72,55 +75,59 @@ function ConversationalMic({ onTranscriptReady, onAutoSubmit, disabled }) {
   };
 }, []);
 
-    // TODO: Add useEffect to auto-start listening when recognition is ready
     useEffect(() => {
   if (recognition && isSupported && !disabled) {
     startListening();
   }
 }, [recognition, isSupported, disabled]);
 
-    // TODO: Implement clearSilenceTimer
     const clearSilenceTimer = () => {
-  if (silenceTimer) {
-    clearTimeout(silenceTimer);
-    setSilenceTimer(null);
+  if (silenceTimerRef.current) {
+    clearTimeout(silenceTimerRef.current);
+    silenceTimerRef.current = null;
   }
+  countdownTimersRef.current.forEach((timer) => clearTimeout(timer));
+  countdownTimersRef.current = [];
+  setSilenceTimer(null);
   setAutoSubmitCountdown(null);
 };
 
-    // TODO: Implement startSilenceTimer - auto-submit after SILENCE_TIMEOUT
     const startSilenceTimer = (currentText) => {
+  clearSilenceTimer();
   const timer = setTimeout(() => {
     if (currentText && currentText.trim().length > 0) {
       handleAutoSubmit(currentText.trim());
     }
   }, SILENCE_TIMEOUT);
+  silenceTimerRef.current = timer;
   setSilenceTimer(timer);
 
   setAutoSubmitCountdown(3);
-  setTimeout(() => setAutoSubmitCountdown(2), 1000);
-  setTimeout(() => setAutoSubmitCountdown(1), 2000);
+  countdownTimersRef.current = [
+    setTimeout(() => setAutoSubmitCountdown(2), 1000),
+    setTimeout(() => setAutoSubmitCountdown(1), 2000),
+  ];
 };
 
-    // TODO: Implement startListening
     const startListening = () => {
-  if (!recognition) return;
+  const activeRecognition = recognitionRef.current || recognition;
+  if (!activeRecognition || disabled) return;
   try {
     setLiveText('');
     setFinalText('');
     setAutoSubmitCountdown(null);
-    recognition.start();
+    activeRecognition.start();
     setIsListening(true);
   } catch (error) {
     console.error('Recognition start error:', error.message);
   }
 };
 
-    // TODO: Implement stopListening
     const stopListening = () => {
-  if (!recognition) return;
+  const activeRecognition = recognitionRef.current || recognition;
+  if (!activeRecognition) return;
   try {
-    recognition.stop();
+    activeRecognition.stop();
   } catch (error) {
     // Already stopped
   }
@@ -128,7 +135,6 @@ function ConversationalMic({ onTranscriptReady, onAutoSubmit, disabled }) {
   clearSilenceTimer();
 };
 
-    // TODO: Implement handleAutoSubmit
     const handleAutoSubmit = (text) => {
   stopListening();
   if (onAutoSubmit) {
@@ -136,7 +142,6 @@ function ConversationalMic({ onTranscriptReady, onAutoSubmit, disabled }) {
   }
 };
 
-    // TODO: Implement handleManualSubmit
     const handleManualSubmit = () => {
   const text = (finalText + ' ' + liveText).trim();
   if (!text) return;
@@ -146,7 +151,6 @@ function ConversationalMic({ onTranscriptReady, onAutoSubmit, disabled }) {
   }
 };
 
-    // TODO: Implement handleRestart
     const handleRestart = () => {
   setLiveText('');
   setFinalText('');
