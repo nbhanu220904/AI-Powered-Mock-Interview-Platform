@@ -20,7 +20,6 @@ function HomePage() {
   const [allInterviews, setAllInterviews] = useState([]);
   const [loading, setLoading] = useState(true);
 
-    // TODO: Add useEffect to load interview history on mount using getHistory
     useEffect(() => {
   const loadHistory = async () => {
     try {
@@ -52,8 +51,11 @@ function HomePage() {
   }
 };
 
-    // TODO: Implement handleCardClick - navigate based on interview status
     const handleCardClick = (interview) => {
+  if (interview.modality === 'video' && interview.status !== 'completed') {
+    navigate(`/video-interview/${interview._id}`);
+    return;
+  }
   if (interview.status === 'completed') {
     navigate(`/feedback/${interview._id}`);
   } else {

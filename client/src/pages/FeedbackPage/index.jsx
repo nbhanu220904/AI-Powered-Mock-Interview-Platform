@@ -19,7 +19,6 @@ function FeedbackPage() {
   const [interview, setInterview] = useState(null);
   const [loading, setLoading] = useState(true);
 
-    // TODO: Add useEffect to load interview feedback using getInterview(id)
     useEffect(() => {
   const loadFeedback = async () => {
     try {
