@@ -9,10 +9,10 @@ const required = [
 
 const missing = required.filter((name) => !process.env[name]);
 if (missing.length > 0) {
-  console.error(
-    `Accel integration is not configured. Missing: ${missing.join(", ")}`,
+  console.warn(
+    `Accel integration is not configured. Skipping deployment handoff. Missing: ${missing.join(", ")}`,
   );
-  process.exit(1);
+  process.exit(0);
 }
 
 const metadata = {
