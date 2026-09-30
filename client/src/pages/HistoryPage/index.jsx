@@ -22,7 +22,6 @@ function HistoryPage() {
 
   const ITEMS_PER_PAGE = 8;
 
-  // TODO: Add useEffect to load paginated history using getHistory
   useEffect(() => {
   const loadHistory = async () => {
     setLoading(true);
@@ -41,7 +40,6 @@ function HistoryPage() {
   loadHistory();
 }, [page]);
 
-    // TODO: Implement handleDelete - delete interview and update state
     const handleDelete = async (id) => {
   try {
     await deleteHistoryItem(id);

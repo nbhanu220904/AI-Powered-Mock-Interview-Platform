@@ -8,6 +8,11 @@ import {
   getInterview,
   transcribeOnly,
   speakText,
+  getVideoSession,
+  startVideoSession,
+  updateVideoSession,
+  addVideoTranscript,
+  endVideoSession,
 } from '../controllers/interview.controller.js';
 import authenticate from '../middleware/auth.middleware.js';
 import { uploadAudio } from '../middleware/upload.middleware.js';
@@ -24,5 +29,10 @@ router.post('/:id/code', submitCode);
 router.post('/:id/end', endInterview);
 router.get('/:id', getInterview);
 router.post('/:id/speak', speakText);
+router.post('/:id/video/session', startVideoSession);
+router.get('/:id/video/session', getVideoSession);
+router.patch('/:id/video/session', updateVideoSession);
+router.post('/:id/video/transcript', addVideoTranscript);
+router.post('/:id/video/end', endVideoSession);
 
 export default router;
