@@ -15,8 +15,27 @@ jobs:
       - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4.3.1
         with:
           fetch-depth: 0  # Shallow clones should be disabled for a better relevancy of analysis
+      - name: Validate SonarQube configuration
+        shell: bash
+        env:
+          SONAR_HOST_URL: ${{ vars.SONAR_HOST_URL || 'https://sonarcloud.io' }}
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+        run: |
+          set -euo pipefail
+          [[ "$SONAR_HOST_URL" =~ ^https?://[^[:space:]]+$ ]] || {
+            echo "::error::SONAR_HOST_URL must be a complete http(s) URL"
+            exit 1
+          }
+          [[ -n "$SONAR_TOKEN" ]] || {
+            echo "::error::SONAR_TOKEN repository secret is not configured"
+            exit 1
+          }
       - name: SonarQube Scan
         uses: SonarSource/sonarqube-scan-action@7006c4492b2e0ee0f816d36501671557c97f5995 # v8.1.0
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-          SONAR_HOST_URL: ${{ vars.SONAR_HOST_URL }}
+          SONAR_HOST_URL: ${{ vars.SONAR_HOST_URL || 'https://sonarcloud.io' }}
+        with:
+          args: >
+            -Dsonar.organization=nbhanu220904
+            -Dsonar.projectKey=nbhanu220904_AI-Powered-Mock-Interview-Platform

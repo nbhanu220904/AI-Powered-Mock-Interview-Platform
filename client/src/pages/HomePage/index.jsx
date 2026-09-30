@@ -20,7 +20,6 @@ function HomePage() {
   const [allInterviews, setAllInterviews] = useState([]);
   const [loading, setLoading] = useState(true);
 
-    // TODO: Add useEffect to load interview history on mount using getHistory
     useEffect(() => {
   const loadHistory = async () => {
     try {
